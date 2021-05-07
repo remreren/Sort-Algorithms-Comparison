@@ -7,7 +7,6 @@ public class QuickSort {
 
     private int[] list;
     private int[] listOriginal;
-    private String partition;
     private long duration;
 
     public QuickSort(int[] list) {
@@ -16,7 +15,6 @@ public class QuickSort {
     }
 
     void reset() {
-        partition = null;
         duration = 0;
         list = Arrays.copyOf(listOriginal, listOriginal.length);
     }
@@ -30,8 +28,6 @@ public class QuickSort {
     }
 
     void sort(String partition) {
-        this.partition = partition;
-
         long startTime = System.nanoTime();
 
         if (partition.toLowerCase(Locale.forLanguageTag("TR")).equals("hoare") || partition.toLowerCase(Locale.forLanguageTag("TR")).equals("hoares"))
@@ -71,12 +67,26 @@ public class QuickSort {
     }
 
     void sortHoare(int leftP, int rightP) {
-        if (rightP <= leftP) return;
-        else {
+        while (leftP < rightP) {
             int pivot = list[rightP];
             int partition = hoarePartition(leftP, rightP, pivot);
-            sortHoare(leftP, partition - 1);
-            sortHoare(partition + 1, rightP);
+//            sortHoare(leftP, partition - 1);
+//            leftP = partition + 1;
+
+            if (partition - leftP < rightP - partition) {
+                sortHoare(leftP, partition - 1);
+                leftP = partition + 1;
+            } else {
+                sortHoare(partition + 1, rightP);
+                rightP = partition - 1;
+            }
+
+//            if (leftP < partition) {
+//                sortHoare(leftP, partition - 1);
+//            }
+//            if (rightP > partition) {
+//                sortHoare(partition + 1, rightP);
+//            }
         }
     }
 
@@ -96,8 +106,7 @@ public class QuickSort {
     }
 
     void sortLomuto(int leftP, int rightP) {
-        if (rightP < leftP) return;
-        else {
+        if (rightP >= leftP) {
             int pivot = list[rightP];
             int partition = lomutoPartition(leftP, rightP, pivot);
             sortLomuto(leftP, partition - 1);
