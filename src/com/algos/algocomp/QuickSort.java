@@ -19,14 +19,6 @@ public class QuickSort {
         list = Arrays.copyOf(listOriginal, listOriginal.length);
     }
 
-    public long getDuration() {
-        return duration;
-    }
-
-    public boolean isSorted() {
-        return Test.isSorted(list);
-    }
-
     void sort(String partition) {
         long startTime = System.nanoTime();
 
@@ -40,8 +32,7 @@ public class QuickSort {
     }
 
     void sortDeutchNationalFlag(int leftP, int rightP) {
-        if (rightP <= leftP) return;
-        else {
+        if (rightP > leftP) {
             if (leftP - rightP == 1) {
                 if (list[rightP] > list[leftP]) swap(rightP, leftP);
                 return;
@@ -129,6 +120,14 @@ public class QuickSort {
         int tempVal = list[p1];
         list[p1] = list[p2];
         list[p2] = tempVal;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public boolean isSorted() {
+        return Test.isSorted(list);
     }
 
     public int[] getList() {
