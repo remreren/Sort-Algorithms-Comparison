@@ -8,6 +8,7 @@ public class QuickSort {
     private int[] list;
     private int[] listOriginal;
     private String partition;
+    private long duration;
 
     public QuickSort(int[] list) {
         this.listOriginal = list;
@@ -16,21 +17,30 @@ public class QuickSort {
 
     void reset() {
         partition = null;
+        duration = 0;
         list = Arrays.copyOf(listOriginal, listOriginal.length);
     }
 
-    boolean isSorted() {
+    public long getDuration() {
+        return duration;
+    }
+
+    public boolean isSorted() {
         return Test.isSorted(list);
     }
 
     void sort(String partition) {
         this.partition = partition;
 
+        long startTime = System.nanoTime();
+
         if (partition.toLowerCase(Locale.forLanguageTag("TR")).equals("hoare") || partition.toLowerCase(Locale.forLanguageTag("TR")).equals("hoares"))
             sortHoare(0, list.length - 1);
         else if (partition.toLowerCase(Locale.forLanguageTag("TR")).equals("lomuto") || partition.toLowerCase(Locale.forLanguageTag("TR")).equals("lomutos"))
             sortLomuto(0, list.length - 1);
         else sortDeutchNationalFlag(0, list.length - 1);
+
+        duration = System.nanoTime() - startTime;
     }
 
     void sortDeutchNationalFlag(int leftP, int rightP) {

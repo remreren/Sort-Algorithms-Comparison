@@ -2,12 +2,14 @@ package com.algos.algocomp;
 
 public class CountingSort {
     private int[] list;
+    private long duration;
 
     public CountingSort(int[] list) {
         this.list = list;
     }
 
     void sort() {
+        long startTime = System.nanoTime();
         int[] c = new int[10000];
         int[] b = new int[list.length];
 
@@ -15,6 +17,11 @@ public class CountingSort {
         for (int i = 1; i < 10000; i++) c[i] += c[i - 1];
         for (int i = list.length - 1; i >= 0; i--) b[--c[list[i]]] = list[i];
         list = b;
+        duration = System.nanoTime() - startTime;
+    }
+
+    public long getDuration() {
+        return duration;
     }
 
     public boolean isSorted() {
