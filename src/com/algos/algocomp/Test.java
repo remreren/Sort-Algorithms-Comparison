@@ -1,7 +1,5 @@
 package com.algos.algocomp;
 
-import java.util.Locale;
-
 public class Test {
 
     public static boolean isSorted(int[] list) {

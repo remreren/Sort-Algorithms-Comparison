@@ -61,8 +61,6 @@ public class QuickSort {
         while (leftP < rightP) {
             int pivot = list[rightP];
             int partition = hoarePartition(leftP, rightP, pivot);
-//            sortHoare(leftP, partition - 1);
-//            leftP = partition + 1;
 
             if (partition - leftP < rightP - partition) {
                 sortHoare(leftP, partition - 1);
@@ -72,10 +70,15 @@ public class QuickSort {
                 rightP = partition - 1;
             }
 
+//            sortHoare(leftP, partition - 1);
+//            leftP = partition + 1;
+
+//            sortHoare(leftP, partition - 1);
+//            sortHoare(partition + 1, rightP);
+
 //            if (leftP < partition) {
 //                sortHoare(leftP, partition - 1);
-//            }
-//            if (rightP > partition) {
+//            } if (rightP > partition) {
 //                sortHoare(partition + 1, rightP);
 //            }
         }
@@ -97,11 +100,20 @@ public class QuickSort {
     }
 
     void sortLomuto(int leftP, int rightP) {
-        if (rightP >= leftP) {
+        while (rightP >= leftP) {
             int pivot = list[rightP];
             int partition = lomutoPartition(leftP, rightP, pivot);
-            sortLomuto(leftP, partition - 1);
-            sortLomuto(partition + 1, rightP);
+
+            if (partition - leftP < rightP - partition) {
+                sortHoare(leftP, partition - 1);
+                leftP = partition + 1;
+            } else {
+                sortHoare(partition + 1, rightP);
+                rightP = partition - 1;
+            }
+
+//            sortLomuto(leftP, partition - 1);
+//            sortLomuto(partition + 1, rightP);
         }
     }
 
