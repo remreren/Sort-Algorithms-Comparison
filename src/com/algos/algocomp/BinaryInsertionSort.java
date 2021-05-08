@@ -1,7 +1,7 @@
 package com.algos.algocomp;
 
 public class BinaryInsertionSort {
-    private int[] list;
+    private final int[] list;
     private long duration;
 
     public BinaryInsertionSort(int[] list) {
@@ -14,7 +14,8 @@ public class BinaryInsertionSort {
             int key = list[i];
             int insertedPosition = searchPosition(0, i - 1, key);
 
-            for (int j = i - 1; j >= insertedPosition; --j) list[j + 1] = list[j];
+            if (i - insertedPosition >= 0)
+                System.arraycopy(list, insertedPosition, list, insertedPosition + 1, i - insertedPosition);
 
             list[insertedPosition] = key;
         }
@@ -30,11 +31,8 @@ public class BinaryInsertionSort {
         while (start <= last) {
             int middle = start + (last - start) / 2;
 
-            if (key < list[middle]) {
-                last = middle - 1;
-            } else {
-                start = middle + 1;
-            }
+            if (key < list[middle]) last = middle - 1;
+            else start = middle + 1;
         }
 
         return start;

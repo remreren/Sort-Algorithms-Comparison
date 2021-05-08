@@ -1,7 +1,7 @@
 package com.algos.algocomp;
 
 public class InsertionSort {
-    private int[] list;
+    private final int[] list;
     private long duration;
 
     public InsertionSort(int[] list) {
@@ -11,14 +11,14 @@ public class InsertionSort {
     void sort() {
         long startTime = System.nanoTime();
         int e = list.length;
-        for (int j = 1; j < e; j++) {
-            int key = list[j];
-            int i = j - 1;
-            while ((i > -1) && (list[i] > key)) {
-                list[i + 1] = list[i];
-                i--;
+        for (int i = 1; i < e; i++) {
+            int key = list[i];
+            int j = i - 1;
+            while ((j > -1) && (list[j] > key)) {
+                list[j + 1] = list[j];
+                j--;
             }
-            list[i + 1] = key;
+            list[j + 1] = key;
         }
         duration = System.nanoTime() - startTime;
     }

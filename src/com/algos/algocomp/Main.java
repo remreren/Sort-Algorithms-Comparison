@@ -25,9 +25,9 @@ public class Main {
 
             for (int j = 0; j < rdList[i][0].length; j++) rdList[i][0][j] = random.nextInt(MAX_VALUE);
             for (int j = 0; j < rdList[i][1].length; j++)
-                rdList[i][1][rdList[i][1].length - i - 1] = (int) (((rdList[i][1].length - (float) i) / rdList[i][1].length) * (MAX_VALUE - 1));
+                rdList[i][1][rdList[i][1].length - j - 1] = (int) (((rdList[i][1].length - (double) j) / rdList[i][1].length) * (MAX_VALUE - 1));
             for (int j = 0; j < rdList[i][2].length; j++)
-                rdList[i][1][i] = (int) (((rdList[i][2].length - (float) i) / rdList[i][2].length) * (MAX_VALUE - 1));
+                rdList[i][2][j] = (int) (((rdList[i][2].length - (double) j) / rdList[i][2].length) * (MAX_VALUE - 1));
         }
 
         long[][][][] results = new long[3][rdList.length][rdList[0].length][];
