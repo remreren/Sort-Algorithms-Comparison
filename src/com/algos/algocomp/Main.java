@@ -2,6 +2,7 @@ package com.algos.algocomp;
 
 import java.io.FileWriter;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Random;
 
 public class Main {
@@ -95,8 +96,8 @@ public class Main {
         try {
             FileWriter str = new FileWriter("data.csv");
             for (int i = 0; i < sunum.length; i++) {
-                str.append("\n,Trial #").append(String.format("%d\n,", i + 1));
-                for (int k = 0; k < sunum[i][0].length; k++) for(int m = 0; m < sunum[i][0][k].length; m++) str.append(String.format("%dK,", lists[k][m].length / 1000));
+                str.append("\n,Trial #").append(String.format(Locale.ENGLISH, "%d\n,", i + 1));
+                for (int k = 0; k < sunum[i][0].length; k++) for(int m = 0; m < sunum[i][0][k].length; m++) str.append(String.format(Locale.ENGLISH, "%dK,", lists[k][m].length / 1000));
                 str.append("\n,");
                 for (int k = 0; k < sunum[i][0].length; k++) for(int m = 0; m < sunum[i][0][k].length; m++) str.append(m == 0 ? "Random," : m == 1 ? "Sorted," : "Reverse Sorted,");
                 str.append("\n");
@@ -104,7 +105,7 @@ public class Main {
                     str.append(names[j]).append(",");
                     for (int k = 0; k < sunum[i][j].length; k++) {
                         for (int m = 0; m < sunum[i][j][k].length; m++) {
-                            str.append(String.format("%.2f,", (double) sunum[i][j][k][m] / 1000000));
+                            str.append(String.format(Locale.ENGLISH, "%.2f,", (double) sunum[i][j][k][m] / 1000000));
                         }
                     }
                     str.append("\n");
