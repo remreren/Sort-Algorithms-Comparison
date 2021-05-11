@@ -8,16 +8,16 @@ import java.util.Random;
 public class Main {
 
     public static final int MAX_VALUE = 10000;
-    private static final int TRIAL_NUMBERS = 5;
+    private static final int TRIAL_NUMBERS = 6;
     private static final int SIZE_CASE_COUNT = 10;
     private static final int CASE_COUNT = 3;
+
+    private static final int cons = 1024;
+    private static final int growth = 1;
 
     private static final String[] names = new String[]{"Hoares QuickSort", "3way QuickSort", "Counting Sort", "BinaryInsertion Sort", "Insertion Sort", "HeapSort", "MergeSort"};
 
     public static void main(String[] args) {
-
-        int cons = 10000;
-        int growth = 1;
 
         /**
          * Best case for Quicksort is at random state. Works in O(nlogn) time complexity.
@@ -79,8 +79,7 @@ public class Main {
             }
         }
 
-        // list[sort count][trial number][size case count][case count]
-
+        // long[sort count][trial number][size case count][case count]
         long[][][][] sunum = new long[TRIAL_NUMBERS][names.length][SIZE_CASE_COUNT][CASE_COUNT];
 
         for (int i = 0; i < results.length; i++) {
@@ -95,9 +94,9 @@ public class Main {
 
         try {
             FileWriter str = new FileWriter("data.csv");
-            for (int i = 0; i < sunum.length; i++) {
-                str.append("\n,Trial #").append(String.format(Locale.ENGLISH, "%d\n,", i + 1));
-                for (int k = 0; k < sunum[i][0].length; k++) for(int m = 0; m < sunum[i][0][k].length; m++) str.append(String.format(Locale.ENGLISH, "%dK,", lists[k][m].length / 1000));
+            for (int i = 1; i < sunum.length; i++) {
+                str.append("\n,Trial #").append(String.format(Locale.ENGLISH, "%d\n,", i));
+                for (int k = 0; k < sunum[i][0].length; k++) for(int m = 0; m < sunum[i][0][k].length; m++) str.append(String.format(Locale.ENGLISH, "%d,", lists[k][m].length));
                 str.append("\n,");
                 for (int k = 0; k < sunum[i][0].length; k++) for(int m = 0; m < sunum[i][0][k].length; m++) str.append(m == 0 ? "Random," : m == 1 ? "Sorted," : "Reverse Sorted,");
                 str.append("\n");
@@ -105,7 +104,7 @@ public class Main {
                     str.append(names[j]).append(",");
                     for (int k = 0; k < sunum[i][j].length; k++) {
                         for (int m = 0; m < sunum[i][j][k].length; m++) {
-                            str.append(String.format(Locale.ENGLISH, "%.2f,", (double) sunum[i][j][k][m] / 1000000));
+                            str.append(String.format(Locale.ENGLISH, "%.6f,", (double) sunum[i][j][k][m] / 1000000));
                         }
                     }
                     str.append("\n");

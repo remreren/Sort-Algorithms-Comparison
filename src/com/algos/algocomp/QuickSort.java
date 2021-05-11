@@ -7,7 +7,8 @@ public class QuickSort {
 
     private int[] list;
     private int[] listOriginal;
-    private long duration;
+
+    private long duration = 0;
 
     public QuickSort(int[] list) {
         this.listOriginal = list;
@@ -91,6 +92,7 @@ public class QuickSort {
         while (true) {
             while (list[leftP] < pivot) leftP++;
             while (rightP > 0 && list[rightP] >= pivot) rightP--;
+
             if (leftP >= rightP) break;
             else swap(leftP, rightP);
         }

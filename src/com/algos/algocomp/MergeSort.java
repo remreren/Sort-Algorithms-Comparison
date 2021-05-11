@@ -2,7 +2,7 @@ package com.algos.algocomp;
 
 public class MergeSort {
     private int[] list;
-    private long duration;
+    private long duration = 0;
 
     public MergeSort(int[] list) {
         this.list = list;
@@ -15,8 +15,7 @@ public class MergeSort {
     }
 
     public void mergeSort(int lowerIndex, int upperIndex) {
-        if (lowerIndex == upperIndex) return;
-        else {
+        if (lowerIndex != upperIndex) {
             int middleIndex = (lowerIndex + upperIndex) / 2;
             mergeSort(lowerIndex, middleIndex);
             mergeSort(middleIndex + 1, upperIndex);
@@ -46,9 +45,7 @@ public class MergeSort {
             list[temporaryIndex++] = list[higherOne++];
         }
 
-        for (int i = 0; i < totalNumberOfElements; i++) {
-            list[lowerOne + i] = list[i];
-        }
+        if (totalNumberOfElements >= 0) System.arraycopy(list, 0, list, lowerOne, totalNumberOfElements);
     }
 
     public long getDuration() {
