@@ -1,13 +1,10 @@
 package com.algos.algocomp;
 
-import java.io.FileWriter;
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.Random;
+import java.io.*;
+import java.util.*;
 
 /**
- * @author
- * Emre Eren 150118020
+ * @author Emre Eren 150118020
  * Edanur Öztürk 150117007
  * Feyza Bulgurcu 150117033
  */
@@ -17,7 +14,7 @@ public class Main {
     public static final int MAX_VALUE = 10000;
 
     // We told that we are doing trials more than one. For the scalability of app, we defined it here.
-    private static final int TRIAL_NUMBERS = 2;
+    private static final int TRIAL_NUMBERS = 11;
 
     // Defined here how many different size count should be done.
     private static final int SIZE_CASE_COUNT = 10;
@@ -59,20 +56,26 @@ public class Main {
         // This list holds all inputs.
         int[][][] lists = new int[SIZE_CASE_COUNT][CASES.length][];
 
-        // Input generation loop. Creates all input cases.
-        for (int i = 0; i < lists.length; i++) {
-            int length = BASE * (1 + i * MULTIPLIER);
+        File[] files = getInputFiles();
+        if (files.length < SIZE_CASE_COUNT) {
+            // Input generation loop. Creates all input cases.
+            for (int i = 0; i < lists.length; i++) {
+                int length = BASE * (1 + i * MULTIPLIER);
 
-            lists[i][0] = random(0, MAX_VALUE, length, 5621);
-            lists[i][1] = linspace(0, MAX_VALUE, length);
-            lists[i][2] = linspace(MAX_VALUE, 0, length);
+                lists[i][0] = random(0, MAX_VALUE, length, 5621);
+                lists[i][1] = linspace(0, MAX_VALUE, length);
+                lists[i][2] = linspace(MAX_VALUE, 0, length);
+            }
+
+            writeInput(lists);
+        } else {
+            lists = readFiles(files);
         }
-
 
         // Warm machine up
         long p = 0;
         for (long i = 0; i < (int) (999999999 * 1.2d); i++) {
-            p += 1;
+            p += 16;
             p /= 4;
         }
         System.out.println(p);
@@ -118,6 +121,67 @@ public class Main {
             str.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    static int[][][] readFiles(File... files) {
+        int[][][] input = new int[files.length][3][];
+        for (int i = 0; i < files.length; i++) {
+            try {
+                if (files[i].exists()) {
+                    BufferedReader reader = new BufferedReader(new FileReader(files[i]));
+                    int size = Integer.parseInt(reader.readLine());
+                    for (int m = 0; m < input[i].length; m++) {
+                        input[i][m] = new int[size];
+                        for (int j = 0; j < size; j++) {
+                            input[i][m][j] = Integer.parseInt(reader.readLine());
+                        }
+                    }
+                    reader.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return input;
+    }
+
+    static File[] getInputFiles() {
+        ArrayList<File> files = new ArrayList<>();
+        File fold = new File("./inputs");
+        if (!fold.exists())
+            if (!fold.mkdir()) return null;
+
+        File f = new File("./inputs");
+        if (f.exists()) {
+            for (File file : f.listFiles()) {
+                if (file.getName().startsWith("input"))
+                    files.add(file);
+            }
+        }
+        return files.toArray(new File[0]);
+    }
+
+    static void writeInput(int[][][] inputs) {
+        for (int i = 0; i < inputs.length; i++) {
+            try {
+                File file = new File(String.format("./inputs/input_%d.txt", i + 1));
+                if (file.createNewFile()) {
+                    FileWriter writer = new FileWriter(file);
+                    for (int k = 0; k < inputs[i].length; k++) {
+                        if (k == 0)
+                            writer.append(String.format("%d\n", inputs[i][k].length));
+                        for (int m = 0; m < inputs[i][k].length; m++) {
+                            writer.append(String.format("%d\n", inputs[i][k][m]));
+                        }
+                    }
+                    writer.flush();
+                    writer.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
