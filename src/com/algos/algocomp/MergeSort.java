@@ -1,58 +1,56 @@
 package com.algos.algocomp;
 
-public class MergeSort {
-    private int[] list;
-    private long duration = 0;
+/**
+ * @author Edanur Öztürk 150117007
+ */
+public class MergeSort extends Sort {
 
     public MergeSort(int[] list) {
-        this.list = list;
+        super(list);
     }
 
-    public void sort() {
+    @Override
+    public long sort() {
         long startTime = System.nanoTime();
         mergeSort(0, list.length - 1);
         duration = System.nanoTime() - startTime;
-    }
-
-    public void mergeSort(int lowerIndex, int upperIndex) {
-        if (lowerIndex != upperIndex) {
-            int middleIndex = (lowerIndex + upperIndex) / 2;
-            mergeSort(lowerIndex, middleIndex);
-            mergeSort(middleIndex + 1, upperIndex);
-            merge(lowerIndex, middleIndex + 1, upperIndex);
-        }
-    }
-
-    private void merge(int lowerOne, int higherOne, int upperIndex) {
-        int temporaryIndex = 0;
-        int lowerIndex = lowerOne;
-        int middleIndex = higherOne - 1;
-        int totalNumberOfElements = upperIndex - lowerIndex + 1;
-
-        while (lowerIndex <= middleIndex && higherOne <= upperIndex) {
-            if (list[lowerIndex] < list[higherOne]) {
-                list[temporaryIndex++] = list[lowerIndex++];
-            } else {
-                list[temporaryIndex++] = list[higherOne++];
-            }
-        }
-
-        while (lowerIndex <= middleIndex) {
-            list[temporaryIndex++] = list[lowerIndex++];
-        }
-
-        while (higherOne <= upperIndex) {
-            list[temporaryIndex++] = list[higherOne++];
-        }
-
-        if (totalNumberOfElements >= 0) System.arraycopy(list, 0, list, lowerOne, totalNumberOfElements);
-    }
-
-    public long getDuration() {
         return duration;
     }
 
-    public boolean isSorted() {
-        return Test.isSorted(list);
+    public void mergeSort(int left, int right) {
+        if (left < right) {
+            int middle = left + (right - left) / 2;
+            mergeSort(left, middle);
+            mergeSort(middle + 1, right);
+            merge(left, middle, right);
+        }
+    }
+
+    private void merge(int left, int middle, int right) {
+        int n1 = middle - left + 1;
+        int n2 = right - middle;
+
+        int[] leftA = new int[n1], rightA = new int[n2];
+
+        for (int i = 0; i < n1; i++)
+            leftA[i] = list[left + i];
+        for (int i = 0; i < n2; i++)
+            rightA[i] = list[middle + i + 1];
+
+        int i = 0, j = 0, k = left;
+
+        while (i < n1 && j < n2) {
+            if (leftA[i] <= rightA[j]) list[k] = leftA[i++];
+            else list[k] = rightA[j++];
+            k++;
+        }
+
+        while (i < n1) {
+            list[k++] = leftA[i++];
+        }
+
+        while (j < n2) {
+            list[k++] = rightA[j++];
+        }
     }
 }

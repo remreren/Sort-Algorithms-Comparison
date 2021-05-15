@@ -1,5 +1,8 @@
 package com.algos.algocomp;
 
+/**
+ * @author Emre Eren 150118020
+ */
 public class Test {
 
     public static boolean isSorted(int[] list) {

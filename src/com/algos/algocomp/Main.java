@@ -5,17 +5,32 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Random;
 
+/**
+ * @author
+ * Emre Eren 150118020
+ * Edanur Öztürk 150117007
+ * Feyza Bulgurcu 150117033
+ */
 public class Main {
 
+    // Maximum value that each element should be.
     public static final int MAX_VALUE = 10000;
-    private static final int TRIAL_NUMBERS = 6;
+
+    // We told that we are doing trials more than one. For the scalability of app, we defined it here.
+    private static final int TRIAL_NUMBERS = 2;
+
+    // Defined here how many different size count should be done.
     private static final int SIZE_CASE_COUNT = 10;
-    private static final int CASE_COUNT = 3;
 
-    private static final int cons = 1024;
-    private static final int growth = 1;
+    // Case names. We have 3 different case inputs; Random, Sorted and Reverse Sorted Lists.
+    private static final String[] CASES = {"Random", "Sorted", "Reverse Sorted"};
 
-    private static final String[] names = new String[]{"Hoares QuickSort", "3way QuickSort", "Counting Sort", "BinaryInsertion Sort", "Insertion Sort", "HeapSort", "MergeSort"};
+    // For different sizes, we have multipliers and base.
+    private static final int BASE = 1024;
+    private static final int MULTIPLIER = 1;
+
+    // Names of sort types.
+    private static final String[] SORTS = {"Hoares QuickSort", "3way QuickSort", "Counting Sort", "BinaryInsertion Sort", "Insertion Sort", "HeapSort", "MergeSort"};
 
     public static void main(String[] args) {
 
@@ -32,6 +47,7 @@ public class Main {
          * Worst case for BinaryInsertion Sort is at reverse sorted state. Works in O(n^2) time complexity.
          *
          * Best case for Insertion Sort is at sorted state. Works in O(n) time complexity.
+         * Average case for Insertion Sort is at random state. Works in O(n^2) time complexity.
          * Worst case for Insertion Sort is at reverse sorted state. Works in O(n^2) time complexity.
          *
          * Best case and worst case does not matter for HeapSort. Always works in O(nlogn) time complexity.
@@ -40,71 +56,58 @@ public class Main {
          */
 
         // int[size case count][case count][size]
-        int[][][] lists = new int[SIZE_CASE_COUNT][CASE_COUNT][];
+        // This list holds all inputs.
+        int[][][] lists = new int[SIZE_CASE_COUNT][CASES.length][];
+
+        // Input generation loop. Creates all input cases.
         for (int i = 0; i < lists.length; i++) {
-            int length = cons * (1 + i * growth);
-            Random random = new Random(5621);
+            int length = BASE * (1 + i * MULTIPLIER);
 
-            lists[i][0] = new int[length];
-            lists[i][1] = new int[length];
-            lists[i][2] = new int[length];
-
-            for (int j = 0; j < lists[i][0].length; j++) lists[i][0][j] = random.nextInt(MAX_VALUE);
-            for (int j = 0; j < lists[i][1].length; j++)
-                lists[i][1][lists[i][1].length - j - 1] = (int) (((lists[i][1].length - (double) j) / lists[i][1].length) * (MAX_VALUE - 1));
-            for (int j = 0; j < lists[i][2].length; j++)
-                lists[i][2][j] = (int) (((lists[i][2].length - (double) j) / lists[i][2].length) * (MAX_VALUE - 1));
+            lists[i][0] = random(0, MAX_VALUE, length, 5621);
+            lists[i][1] = linspace(0, MAX_VALUE, length);
+            lists[i][2] = linspace(MAX_VALUE, 0, length);
         }
 
-        long[][][][] results = new long[TRIAL_NUMBERS][SIZE_CASE_COUNT][CASE_COUNT][];
 
-        for (int k = 0; k < results.length; k++) {
-            for (int i = 0; i < lists.length; i++) {
-                for (int j = 0; j < lists[i].length; j++) {
-                    results[k][i][j] = sortAllReturn(lists[i][j], j == 0 ? "Random List Elements" : j == 1 ? "Sorted List Elements" : "Reverse Sorted List Elements");
-                }
-            }
+        // Warm machine up
+        long p = 0;
+        for (long i = 0; i < (int) (999999999 * 1.2d); i++) {
+            p += 1;
+            p /= 4;
         }
+        System.out.println(p);
+
+        // This array holds results.
+        long[][][][] results = new long[TRIAL_NUMBERS][SORTS.length][SIZE_CASE_COUNT][CASES.length];
 
         for (int i = 0; i < results.length; i++) {
-            System.out.printf("Result #%d\n", i + 1);
-            for (int j = 0; j < results[i].length; j++) {
-                System.out.printf("\t> Element size: %d\n", lists[j][0].length);
-                for (int k = 0; k < results[i][j].length; k++) {
-                    System.out.printf("\t\t> Case %d - %s\n", k + 1, k == 0 ? "Random List Elements" : k == 1 ? "Sorted List Elements" : "Reverse Sorted List Elements");
-                    for (int m = 0; m < results[i][j][k].length; m++) {
-                        System.out.printf("\t\t\t- %s : %d ns / %.2f ms\n", names[m], results[i][j][k][m], (double) results[i][j][k][m] / 1000000);
-                    }
+            for (int j = 0; j < lists.length; j++) {
+                for (int k = 0; k < lists[j].length; k++) {
+                    long[] ts = sortAll(lists[j][k]);
+                    for (int m = 0; m < ts.length; m++)
+                        results[i][m][j][k] = ts[m];
                 }
             }
         }
 
-        // long[sort count][trial number][size case count][case count]
-        long[][][][] sunum = new long[TRIAL_NUMBERS][names.length][SIZE_CASE_COUNT][CASE_COUNT];
-
-        for (int i = 0; i < results.length; i++) {
-            for (int j = 0; j < results[i].length; j++) {
-                for (int k = 0; k < results[i][j].length; k++) {
-                    for (int m = 0; m < results[i][j][k].length; m++) {
-                        sunum[i][m][j][k] = results[i][j][k][m];
-                    }
-                }
-            }
-        }
-
+        // Write results to a csv file.
         try {
             FileWriter str = new FileWriter("data.csv");
-            for (int i = 1; i < sunum.length; i++) {
+            for (int i = 1; i < results.length; i++) {
                 str.append("\n,Trial #").append(String.format(Locale.ENGLISH, "%d\n,", i));
-                for (int k = 0; k < sunum[i][0].length; k++) for(int m = 0; m < sunum[i][0][k].length; m++) str.append(String.format(Locale.ENGLISH, "%d,", lists[k][m].length));
+                for (int k = 0; k < results[i][0].length; k++)
+                    for (int m = 0; m < results[i][0][k].length; m++)
+                        str.append(String.format(Locale.ENGLISH, "%d,", lists[k][m].length));
                 str.append("\n,");
-                for (int k = 0; k < sunum[i][0].length; k++) for(int m = 0; m < sunum[i][0][k].length; m++) str.append(m == 0 ? "Random," : m == 1 ? "Sorted," : "Reverse Sorted,");
+                for (int k = 0; k < results[i][0].length; k++)
+                    for (int m = 0; m < results[i][0][k].length; m++)
+                        str.append(CASES[m]).append(",");
                 str.append("\n");
-                for (int j = 0; j < sunum[i].length; j++) {
-                    str.append(names[j]).append(",");
-                    for (int k = 0; k < sunum[i][j].length; k++) {
-                        for (int m = 0; m < sunum[i][j][k].length; m++) {
-                            str.append(String.format(Locale.ENGLISH, "%.6f,", (double) sunum[i][j][k][m] / 1000000));
+                for (int j = 0; j < results[i].length; j++) {
+                    str.append(SORTS[j]).append(",");
+                    for (int k = 0; k < results[i][j].length; k++) {
+                        for (int m = 0; m < results[i][j][k].length; m++) {
+                            str.append(String.format(Locale.ENGLISH, "%.6f,", (double) results[i][j][k][m] / 1000000));
                         }
                     }
                     str.append("\n");
@@ -118,100 +121,67 @@ public class Main {
         }
     }
 
-    static long[] sortAllReturn(int[] rdList, String note) {
+    // Take a list and apply it to all sort types. Return the results of it.
+    private static long[] sortAll(int[] lists) {
+        long[] times = new long[SORTS.length];
+        for (int i = 0; i < SORTS.length; i++) {
+            Sort sort;
+            switch (i) {
+                case 1:
+                    sort = new ThreeWayQuickSort(Arrays.copyOf(lists, lists.length));
+                    break;
 
-        System.out.println("#########");
-        System.out.printf("Element Size: %d\n", rdList.length);
-        System.out.println(note);
+                case 2:
+                    sort = new CountingSort(Arrays.copyOf(lists, lists.length));
+                    break;
 
-        QuickSort hoarequickSort = null;
+                case 3:
+                    sort = new BinaryInsertionSort(Arrays.copyOf(lists, lists.length));
+                    break;
 
-        try {
-            hoarequickSort = CreateSort_QuickSort(rdList);
-            System.out.println("Quicksort/Hoares:");
-            System.out.printf("\tDuration: %dns/%dms\n", hoarequickSort.getDuration(), Math.round((double) hoarequickSort.getDuration() / 1000000));
-            System.out.println(hoarequickSort.isSorted() ? "\tSorted successfully!" : "\tCannot be sorted!");
-        } catch (StackOverflowError e) {
-            System.out.println("Problem!");
+                case 4:
+                    sort = new InsertionSort(Arrays.copyOf(lists, lists.length));
+                    break;
+
+                case 5:
+                    sort = new HeapSort(Arrays.copyOf(lists, lists.length));
+                    break;
+
+                case 6:
+                    sort = new MergeSort(Arrays.copyOf(lists, lists.length));
+                    break;
+                case 0:
+
+                default:
+                    sort = new HoaresQuickSort(Arrays.copyOf(lists, lists.length));
+                    break;
+            }
+            times[i] = sort.sort();
         }
 
-        QuickSort quickSort3way = null;
+        return times;
+    }
 
-        try {
-            quickSort3way = CreateSort_QuickSort(rdList, "dd");
-            System.out.println("Quicksort/3way:");
-            System.out.printf("\tDuration: %dns/%dms\n", quickSort3way.getDuration(), Math.round((double) quickSort3way.getDuration() / 1000000));
-            System.out.println(quickSort3way.isSorted() ? "\tSorted successfully!" : "\tCannot be sorted!");
-        } catch (StackOverflowError e) {
-            System.out.println("Problem!");
+    // Populate a list according to its start, end and required count.
+    static int[] linspace(int start, int end, int count) {
+        int[] list = new int[count];
+        boolean reverse = start > end;
+        int range = Math.abs(end - start);
+        for (int i = 0; i < list.length; i++) {
+            int tmp = (int) (((list.length - (double) i - 1) / (list.length - 1)) * (range - 1));
+            list[i] = reverse ? tmp : range - tmp - 1;
         }
 
-        CountingSort countingSort = CreateSort_CountingSort(rdList);
-        System.out.println("Counting sort:");
-        System.out.printf("\tDuration: %dns/%dms\n", countingSort.getDuration(), Math.round((double) countingSort.getDuration() / 1000000));
-        System.out.println(countingSort.isSorted() ? "\tSorted successfully!" : "\tCannot be sorted!");
-
-        BinaryInsertionSort binaryinsertion = CreateSort_BinaryInsertionSort(rdList);
-        System.out.println("BinaryInsertion sort:");
-        System.out.printf("\tDuration: %dns/%dms\n", binaryinsertion.getDuration(), Math.round((double) binaryinsertion.getDuration() / 1000000));
-        System.out.println(binaryinsertion.isSorted() ? "\tSorted successfully!" : "\tCannot be sorted!");
-
-        InsertionSort insertion = CreateSort_InsertionSort(rdList);
-        System.out.println("Insertion sort:");
-        System.out.printf("\tDuration: %dns/%dms\n", insertion.getDuration(), Math.round((double) insertion.getDuration() / 1000000));
-        System.out.println(insertion.isSorted() ? "\tSorted successfully!" : "\tCannot be sorted!");
-
-        HeapSort heap = CreateSort_HeapSort(rdList);
-        System.out.println("HeapSort:");
-        System.out.printf("\tDuration: %dns/%dms\n", heap.getDuration(), Math.round((double) heap.getDuration() / 1000000));
-        System.out.println(heap.isSorted() ? "\tSorted successfully!" : "\tCannot be sorted!");
-
-        MergeSort merge = CreateSort_MergeSort(rdList);
-        System.out.println("MergeSort:");
-        System.out.printf("\tDuration: %dns/%dms\n", merge.getDuration(), Math.round((double) merge.getDuration() / 1000000));
-        System.out.println(merge.isSorted() ? "\tSorted successfully!" : "\tCannot be sorted!");
-
-        System.out.println("#########");
-        return new long[]{hoarequickSort != null ? hoarequickSort.getDuration() : 0, quickSort3way != null ? quickSort3way.getDuration() : 0, countingSort.getDuration(), binaryinsertion.getDuration(), insertion.getDuration(), heap.getDuration(), merge.getDuration()};
+        return list;
     }
 
-    static QuickSort CreateSort_QuickSort(int[] arr) {
-        return CreateSort_QuickSort(arr, "hoares");
-    }
-
-    static QuickSort CreateSort_QuickSort(int[] arr, String type) {
-        QuickSort quickSort = new QuickSort(Arrays.copyOf(arr, arr.length));
-        quickSort.sort(type);
-        return quickSort;
-    }
-
-    static CountingSort CreateSort_CountingSort(int[] arr) {
-        CountingSort countingSort = new CountingSort(Arrays.copyOf(arr, arr.length));
-        countingSort.sort();
-        return countingSort;
-    }
-
-    static BinaryInsertionSort CreateSort_BinaryInsertionSort(int[] arr) {
-        BinaryInsertionSort binaryInsertionSort = new BinaryInsertionSort(Arrays.copyOf(arr, arr.length));
-        binaryInsertionSort.sort();
-        return binaryInsertionSort;
-    }
-
-    static InsertionSort CreateSort_InsertionSort(int[] arr) {
-        InsertionSort insertionSort = new InsertionSort(Arrays.copyOf(arr, arr.length));
-        insertionSort.sort();
-        return insertionSort;
-    }
-
-    static HeapSort CreateSort_HeapSort(int[] arr) {
-        HeapSort heapSort = new HeapSort(Arrays.copyOf(arr, arr.length));
-        heapSort.sort();
-        return heapSort;
-    }
-
-    static MergeSort CreateSort_MergeSort(int[] arr) {
-        MergeSort mergeSort = new MergeSort(Arrays.copyOf(arr, arr.length));
-        mergeSort.sort();
-        return mergeSort;
+    // Populate a random list according to upper, lower bounds, count and seed.
+    static int[] random(int p1, int p2, int count, int seed) {
+        int[] list = new int[count];
+        Random random = new Random(seed);
+        int min = Math.min(p1, p2);
+        int max = Math.max(p1, p2);
+        for (int i = 0; i < list.length; i++) list[i] = min + random.nextInt(max);
+        return list;
     }
 }

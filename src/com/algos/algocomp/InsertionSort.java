@@ -1,14 +1,16 @@
 package com.algos.algocomp;
 
-public class InsertionSort {
-    private final int[] list;
-    private long duration;
+/**
+ * @author Feyza Bulgurcu 150117033
+ */
+public class InsertionSort extends Sort {
 
     public InsertionSort(int[] list) {
-        this.list = list;
+        super(list);
     }
 
-    void sort() {
+    @Override
+    public long sort() {
         long startTime = System.nanoTime();
         int e = list.length;
         for (int i = 1; i < e; i++) {
@@ -21,17 +23,6 @@ public class InsertionSort {
             list[j + 1] = key;
         }
         duration = System.nanoTime() - startTime;
-    }
-
-    public long getDuration() {
         return duration;
-    }
-
-    public int[] getList() {
-        return list;
-    }
-
-    public boolean isSorted() {
-        return Test.isSorted(list);
     }
 }

@@ -1,29 +1,27 @@
 package com.algos.algocomp;
 
-public class BinaryInsertionSort {
-    private final int[] list;
-    private long duration;
+/**
+ * @author Feyza Bulgurcu 150117033
+ */
+public class BinaryInsertionSort extends Sort {
 
     public BinaryInsertionSort(int[] list) {
-        this.list = list;
+        super(list);
     }
 
-    void sort() {
+    @Override
+    public long sort() {
         long startTime = System.nanoTime();
         for (int i = 1; i < list.length; ++i) {
             int key = list[i];
             int insertedPosition = searchPosition(0, i - 1, key);
 
-            if (i - insertedPosition >= 0)
-                System.arraycopy(list, insertedPosition, list, insertedPosition + 1, i - insertedPosition);
+            for (int j = i - 1; j >= insertedPosition; --j) list[j + 1] = list[j];
 
             list[insertedPosition] = key;
         }
 
         duration = System.nanoTime() - startTime;
-    }
-
-    public long getDuration() {
         return duration;
     }
 
@@ -36,13 +34,5 @@ public class BinaryInsertionSort {
         }
 
         return start;
-    }
-
-    public int[] getList() {
-        return list;
-    }
-
-    public boolean isSorted() {
-        return Test.isSorted(list);
     }
 }

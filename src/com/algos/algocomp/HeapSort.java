@@ -1,14 +1,16 @@
 package com.algos.algocomp;
 
-public class HeapSort {
-    private int[] list;
-    private long duration;
+/**
+ * @author Edanur Öztürk 150117007
+ */
+public class HeapSort extends Sort {
 
     public HeapSort(int[] list) {
-        this.list = list;
+        super(list);
     }
 
-    public void sort() {
+    @Override
+    public long sort() {
         long startTime = System.nanoTime();
         int sizeOfTheList = list.length;
 
@@ -27,6 +29,7 @@ public class HeapSort {
             heapify(i, 0);
         }
         duration = System.nanoTime() - startTime;
+        return duration;
     }
 
     void heapify(int heapSize, int i) {
@@ -54,13 +57,5 @@ public class HeapSort {
 
             heapify(heapSize, largestElement);
         }
-    }
-
-    public long getDuration() {
-        return duration;
-    }
-
-    public boolean isSorted() {
-        return Test.isSorted(list);
     }
 }
